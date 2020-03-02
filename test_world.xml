@@ -1,0 +1,11 @@
+<world>
+	<dimension_x>128</dimension_x>
+	<dimension_y>128</dimension_y>
+	<origin_x>10</origin_x>
+	<origin_y>10</origin_y>
+	<destination_x>100</destination_x>
+	<destination_y>20</destination_y>
+	<color_map>test_world_color.ppm</color_map>
+	<material_map>test_world_material.ppm</material_map>
+</world>
+
