@@ -100,7 +100,7 @@ class Material(Enum):
     LIQUID = 3
 
 class World(object):
-    @static_method
+    @staticmethod
     def parse_file(world_file):
         
         return World()
@@ -129,7 +129,7 @@ class LemmingsAnimation(object):
     explode = [(0, 260), (20, 260), (40, 260), (60, 260), (80, 260), (100, 260), (120, 260), (140, 260), (160, 260), (180, 260), (200, 260), (260, 260), (220, 260), (240, 260)]
 
     def __init__(self):
-        img = Image.open('/home/pi/neopixel/lemming_anim.png').convert('RGB')
+        img = Image.open('./lemming_anim.png').convert('RGB')
         self.sprites = img.load()
 
     def _anim_helper(self, anim):
@@ -146,39 +146,45 @@ class LemmingsAnimation(object):
                     yield 14-(_x-x), _y-y, self.sprites[_x,_y]
             yield None, None, None
 
-    def walk_pixels(self):
-        return self._anim_helper(LemmingsAnimation.walk)
-    def question_pixels(self):
-        return self._anim_helper(LemmingsAnimation.question)
-    def victory_pixels(self):
-        return self._anim_helper(LemmingsAnimation.victory)
-    def fall_pixels(self):
-        return self._anim_helper(LemmingsAnimation.fall)
-    def umbrella_open_pixels(self):
-        return self._anim_helper(LemmingsAnimation.umbrella_open)
-    def umbrella_pixels(self):
-        return self._anim_helper(LemmingsAnimation.umbrella)
-    def block_pixels(self):
-        return self._anim_helper(LemmingsAnimation.block)
-    def climb_pixels(self):
-        return self._anim_helper(LemmingsAnimation.climb)
-    def climb_finish_pixels(self):
-        return self._anim_helper(LemmingsAnimation.climb_finish)
-    def build_pixels(self):
-        return self._anim_helper(LemmingsAnimation.build)
-    def bash_1_pixels(self):
-        return self._anim_helper(LemmingsAnimation.bash_1)
-    def bash_2_pixels(self):
-        return self._anim_mirror_helper(LemmingsAnimation.bash_2)
-    def dig_pixels(self):
-        return chain(self._anim_helper(LemmingsAnimation.dig), self._anim_mirror_helper(LemmingsAnimation.dig))
-    def mine_pixels(self):
-        return self._anim_helper(LemmingsAnimation.mine)
-    def panic_pixels(self):
-        return self._anim_helper(LemmingsAnimation.panic)
-    def squish_pixels(self):
-        return self._anim_helper(LemmingsAnimation.squish)
-    def drown_pixels(self):
-        return self._anim_helper(LemmingsAnimation.drown)
-    def explode_pixels(self):
-        return self._anim_helper(LemmingsAnimation.explode)
+    def animation_pixel_generator(self, state):
+        if isinstance(state, LemmingDyingState):
+            if state is LemmingDyingState.PANIC:
+                return self._anim_helper(LemmingsAnimation.panic)
+            elif state is LemmingDyingState.SQUISH:
+                return self._anim_helper(LemmingsAnimation.squish)
+            elif state is LemmingDyingState.DROWN:
+                return self._anim_helper(LemmingsAnimation.drown)
+            elif state is LemmingDyingState.EXPLODE:
+                return self._anim_helper(LemmingsAnimation.explode)
+            elif state is LemmingDyingState.VICTORY:
+                return self._anim_helper(LemmingsAnimation.victory)
+            else:
+                pass
+        elif isinstance(state, LemmingAliveState):
+            if state is LemmingAliveState.WALK:
+                return self._anim_helper(LemmingsAnimation.walk)
+            elif state is LemmingAliveState.QUESTION:
+                return self._anim_helper(LemmingsAnimation.question)
+            elif state is LemmingAliveState.FALL:
+                return self._anim_helper(LemmingsAnimation.fall)
+            elif state is LemmingAliveState.UMBRELLA:
+                return chain(self._anim_helper(LemmingsAnimation.umbrella_open),
+                             self._anim_helper(LemmingsAnimation.umbrella))
+            elif state is LemmingAliveState.BLOCK:
+                return self._anim_helper(LemmingsAnimation.block)
+            elif state is LemmingAliveState.CLIMB:
+                return self._anim_helper(LemmingsAnimation.climb)
+                #return self._anim_helper(LemmingsAnimation.climb_finish)
+            elif state is LemmingAliveState.BUILD:
+                return self._anim_helper(LemmingsAnimation.build)
+            elif state is LemmingAliveState.BASH:
+                return self._anim_helper(LemmingsAnimation.bash_1)
+                #return self._anim_mirror_helper(LemmingsAnimation.bash_2)
+            elif state is LemmingAliveState.DIG:
+                return chain(self._anim_helper(LemmingsAnimation.dig), self._anim_mirror_helper(LemmingsAnimation.dig))
+            elif state is LemmingAliveState.MINE:
+                return self._anim_helper(LemmingsAnimation.mine)
+            else:
+                pass
+        else:
+            pass
